@@ -22,7 +22,7 @@ async function createLayout() {
     title.textContent = "Chat"
     title.style = `
     margin: 0;
-    text-align: center;
+    color: white;
     `
 
     await displayMessages(section)
@@ -33,6 +33,9 @@ async function createLayout() {
     height: 100px;
     border-bottom: 2px solid grey;
     background-color: #1B1A1F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     `
 
     structure[1].style = `
@@ -50,37 +53,65 @@ async function createLayout() {
 }
 
 async function displayMessages(section) {
-    // const messageList = await fetch("http://calicheoficial.lat/chatapi/messages") 
-    // console.log(messageList)
-
-    const mensajes = [
-        { id: 1, text: "Hola", user: "Víctor" },
-        { id: 2, text: "¿Cómo estás?", user: "María" },
-        { id: 3, text: "Todo bien, gracias.", user: "Víctor" },
-        { id: 4, text: "Me alegra escuchar eso.", user: "María" },
-        { id: 5, text: "¿Vamos al cine hoy?", user: "Víctor" },
-        { id: 6, text: "¡Claro! ¿A qué hora?", user: "María" },
-        { id: 7, text: "A las 7 pm, ¿te parece bien?", user: "Víctor" },
-        { id: 8, text: "Sí, perfecto. Nos vemos luego.", user: "María" }
-    ];
+    const response = await fetch("http://chat.calicheoficial.lat/messages")
+    const messageList = await response.json()
     
     const div = document.createElement("div")
     const ul = document.createElement("ul")
 
-    mensajes.forEach(element => {
+    messageList.forEach(message => {
+        if (message.user === "" || message.text === "") {
+            return
+        }
+
         const li = document.createElement("li")
-        li.innerText = element.text
+        const name = document.createElement("p")
+        const content = document.createElement("p")
+
+        name.innerText = message.user
+        content.innerText = message.text
+
         li.style = `
         color: white;
-        padding: 10px;
         width: fit-content;
+        display: flex;
+        flex-direction: column;
         `
-        if (element.user === "Víctor") {
-            li.style.backgroundColor = "#2C2B32"
-            li.style.textAlign = "right"
+
+        name.style = `
+        margin: 0;
+        `
+
+        content.style = `
+        margin: 0;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 500px;
+        overflow-wrap: break-word;
+        `
+
+        if (message.user === "Víctor") {
+            name.style.textAlign = "right"
+            name.style.paddingRight = "5px"
+            content.style.backgroundColor = "#2C2B32"
+            li.style.alignSelf = "end"
 
         } else {
-            li.style.backgroundColor = "#7363F1"
+            name.style.paddingLeft = "5px"
+            content.style.backgroundColor = "#7363F1"
+        }
+
+        li.appendChild(name)
+        li.appendChild(content)
+
+        if (/\.(jpeg|jpg|png|gif|webp|bmp|svg)$/i.test(message.text)) {
+            const image = document.createElement("img")
+            image.src = message.text
+            image.style = `
+            width: 300px;
+            `
+            
+            li.appendChild(image)
         }
 
         ul.appendChild(li)
@@ -88,11 +119,18 @@ async function displayMessages(section) {
 
     div.style = `
     flex: 5;
+    overflow: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+    padding-top: 25px;
     `
 
     ul.style = `
     margin: 0;
     list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     `
 
     div.appendChild(ul)
@@ -113,8 +151,9 @@ function drawInput(section) {
 
     chatInput.placeholder = "Type a message..."
     chatInput.style = `
-    height: 50px;
-    width: 600px;
+    padding: 10px;
+    height: 40px;
+    width: 590px;
     border: none;
     border-radius: 10px;
     color: white;
