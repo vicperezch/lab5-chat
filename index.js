@@ -82,7 +82,7 @@ function createMessagesLayout(section) {
 }
 
 async function drawMessages() {
-    const response = await fetch("http://chat.calicheoficial.lat/messages")
+    const response = await fetch("https://chat.calicheoficial.lat/messages")
     const messageList = await response.json()
 
     const ul = document.getElementsByTagName("ul")[0]
@@ -197,7 +197,7 @@ function drawInput(section) {
             return
         }
         
-        const response = await fetch("http://chat.calicheoficial.lat/messages", 
+        const response = await fetch("https://chat.calicheoficial.lat/messages", 
             {
                 method: "POST",
                 body: JSON.stringify({text: chatInput.value, user: "victor"})
